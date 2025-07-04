@@ -1,8 +1,8 @@
 package server
 
 import (
-	"io/fs"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	apps "github.com/skyle1995/DevE-Server/apps/app"
@@ -39,23 +39,56 @@ func SetupRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	// 设置前端静态资源
-	distFS, err := fs.Sub(public.Public, "dist")
-	if err != nil {
-		panic(err)
-	}
-	
-	// 设置静态文件服务
-	r.StaticFS("/assets", http.FS(distFS))
-	
-	// 设置站点根目录路由
+	// 映射前端静态资源
+	// 将dist/index.html映射到/
 	r.GET("/", func(c *gin.Context) {
-		c.FileFromFS("index.html", http.FS(distFS))
+		indexHTML, err := public.Public.ReadFile("dist/index.html")
+		if err != nil {
+			c.String(http.StatusInternalServerError, "无法读取index.html")
+			return
+		}
+		c.Header("Content-Type", "text/html; charset=utf-8")
+		c.String(http.StatusOK, string(indexHTML))
 	})
-	
-	// 设置图标路由
+
+	// 将dist/favicon.ico映射到/favicon.ico
 	r.GET("/favicon.ico", func(c *gin.Context) {
-		c.FileFromFS("favicon.ico", http.FS(distFS))
+		favicon, err := public.Public.ReadFile("dist/favicon.ico")
+		if err != nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
+		c.Data(http.StatusOK, "image/x-icon", favicon)
+	})
+
+	// 将dist/assets映射到/assets
+	r.GET("/assets/*filepath", func(c *gin.Context) {
+		filepath := c.Param("filepath")
+		filepath = strings.TrimPrefix(filepath, "/")
+
+		file, err := public.Public.ReadFile("dist/assets/" + filepath)
+		if err != nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
+
+		// 根据文件扩展名设置Content-Type
+		contentType := "application/octet-stream"
+		if strings.HasSuffix(filepath, ".css") {
+			contentType = "text/css"
+		} else if strings.HasSuffix(filepath, ".js") {
+			contentType = "application/javascript"
+		} else if strings.HasSuffix(filepath, ".png") {
+			contentType = "image/png"
+		} else if strings.HasSuffix(filepath, ".jpg") || strings.HasSuffix(filepath, ".jpeg") {
+			contentType = "image/jpeg"
+		} else if strings.HasSuffix(filepath, ".svg") {
+			contentType = "image/svg+xml"
+		} else if strings.HasSuffix(filepath, ".json") {
+			contentType = "application/json"
+		}
+
+		c.Data(http.StatusOK, contentType, file)
 	})
 
 	// 创建控制器实例
