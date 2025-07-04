@@ -1,6 +1,9 @@
 package server
 
 import (
+	"io/fs"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	apps "github.com/skyle1995/DevE-Server/apps/app"
 	"github.com/skyle1995/DevE-Server/apps/auth"
@@ -12,6 +15,7 @@ import (
 	"github.com/skyle1995/DevE-Server/apps/setting"
 	"github.com/skyle1995/DevE-Server/apps/user"
 	"github.com/skyle1995/DevE-Server/middleware"
+	"github.com/skyle1995/DevE-Server/public"
 	"github.com/spf13/viper"
 )
 
@@ -34,6 +38,25 @@ func SetupRouter() *gin.Engine {
 	// 使用日志和恢复中间件
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+
+	// 设置前端静态资源
+	distFS, err := fs.Sub(public.Public, "dist")
+	if err != nil {
+		panic(err)
+	}
+	
+	// 设置静态文件服务
+	r.StaticFS("/assets", http.FS(distFS))
+	
+	// 设置站点根目录路由
+	r.GET("/", func(c *gin.Context) {
+		c.FileFromFS("index.html", http.FS(distFS))
+	})
+	
+	// 设置图标路由
+	r.GET("/favicon.ico", func(c *gin.Context) {
+		c.FileFromFS("favicon.ico", http.FS(distFS))
+	})
 
 	// 创建控制器实例
 	authController := auth.NewController()
