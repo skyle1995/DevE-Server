@@ -1,0 +1,50 @@
+# 服务器配置
+server:
+  # 服务器端口
+  port: 8080
+  # 运行模式： debug, release, test
+  mode: release
+  # 日志级别： DEBUG, INFO, WARN, ERROR, FATAL
+  level: INFO
+  # 会话超时时间（小时）
+  session_timeout: 24
+
+# 数据库配置
+database:
+  # 数据库类型：MySQL, SQLite
+  type: SQLite
+  # MySQL配置（当type=MySQL时使用）
+  mysql:
+    host: localhost
+    port: 3306
+    username: root
+    password: password
+    database: verify_system
+    charset: utf8mb4
+    max_idle_conns: 10
+    max_open_conns: 100
+  # SQLite配置（当type=sqlite时使用）
+  sqlite:
+    path: ./data/database.db
+  # 缓存设置
+  cache:
+    # 缓存类型（memory, redis）
+    type: "memory"
+    # Redis配置（当type=redis时使用）
+    redis:
+      host: "localhost"
+      port: 6379
+      password: ""
+      db: 0
+      prefix: "verify_system:"
+
+# 安全配置
+security:
+  # JWT密钥
+  jwt_secret: your_jwt_secret_key
+  # 密码加密强度
+  bcrypt_cost: 12
+  # 允许失败登录次数
+  max_login_attempts: 5
+  # 登录锁定时间（分钟）
+  login_lock_time: 30
