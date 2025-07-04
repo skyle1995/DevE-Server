@@ -1,0 +1,26 @@
+[
+  {
+    "id": "/workspace",
+    "icon": "layui-icon-home",
+    "title": "工作空间",
+    "children": [
+      {
+        "id": "/workspace/workbench",
+        "icon": "layui-icon-engine",
+        "title": "仪表盘"
+      },
+      {
+        "id": "/workspace/console",
+        "icon": "layui-icon-username",
+        "title": "个人资料"
+      }
+    ]
+  },
+  {
+    "id": "/app",
+    "icon": "layui-icon-table",
+    "title": "应用管理",
+    "children": [
+    ]
+  }
+]
