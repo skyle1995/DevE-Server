@@ -26,6 +26,7 @@ public/dist/*
 *.db
 *.sqlite
 *.sqlite3
+/data/
 
 # 配置文件（可能包含敏感信息）
 /config.yaml
