@@ -6,10 +6,10 @@
 *.dylib
 *.test
 *.out
-DevE
 
 # 依赖目录
 vendor/
+public/dist/*
 
 # IDE和编辑器文件
 .idea/
