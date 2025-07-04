@@ -152,7 +152,7 @@ func SetupRouter() *gin.Engine {
 		admin := protected.Group("/admin")
 		admin.Use(middleware.AdminAuthMiddleware())
 		{
-			// 这里可以添加管理员特有的路由
+			// 这里可以添加管理员特有的路由，后期实现
 		}
 	}
 
